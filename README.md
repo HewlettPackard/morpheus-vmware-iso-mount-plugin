@@ -8,8 +8,6 @@
 
 A Morpheus plugin that adds a **CD/DVD** tab to the instance page and to the server page of VMs running on VMware vSphere. Users can browse vCenter datastores, mount an ISO file to the VM's CD/DVD drive, and eject it, without leaving Morpheus.
 
-This one plugin replaces the separate *CD-DVD Manager Server Tab* plugin. Uninstall that plugin when you install this one, otherwise the server page shows two tabs.
-
 ## Features
 - Shows the VM's CD/DVD drives, the mounted ISO (if any) and whether the drive is connected.
 - Browse the datastores the VM's host can access, open folders, and pick an ISO file.
@@ -30,10 +28,10 @@ This one plugin replaces the separate *CD-DVD Manager Server Tab* plugin. Uninst
 ```
 .\gradlew clean build shadowJar
 ```
-The plugin jar is `build/libs/CD-DVD Manager-<version>-all.jar`.
+The plugin jar is `build/libs/<project name>-<version>-all.jar`. The latest released jar is also kept in the [plugin jar](plugin%20jar) folder of this repository.
 
 ## Install
-1. In Morpheus, go to **Administration > Integrations > Plugins** and upload the `-all.jar`.
+1. In Morpheus, go to **Administration > Integrations > Plugins** and upload the `-all.jar` from the [plugin jar](plugin%20jar) folder (or the one you built).
 2. Sign out and back in so the new permission appears in your session.
 3. Go to **Administration > Roles**, open a role, and set **CD/DVD Tab** to `Read` or `Full`.
 
@@ -84,4 +82,4 @@ Browser -> Morpheus (instance or server page) -> CD-DVD Manager plugin -> vCente
 The jar bundles `slf4j-api` (MIT). The license text and copyright notice are in [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt) and inside the jar under `META-INF/`. Groovy and the Morpheus plugin API are provided by Morpheus and are not bundled.
 
 ## Versioning and branches
-Versions follow MAJOR.MINOR.PATCH and are set in `gradle.properties`. `main` holds the latest release, `release/vX.Y.Z` holds each release, and `osrb-review` holds the code submitted for open source review. Releases are tagged `vX.Y.Z`.
+Versions follow MAJOR.MINOR.PATCH and are set in `gradle.properties`. The jar of the latest release is kept in the `plugin jar` folder.
