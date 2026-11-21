@@ -2255,7 +2255,7 @@ class CdDvdManagerTabRenderer {
     pluginCall('datastores', {})
       .then(function(data) {
         if (data.success && data.datastores) {
-          renderDatastoreList(data.datastores);
+          renderDatastoreList(data.datastores, !!data.restricted);
         } else {
           dsListView.innerHTML = '<div class="cd-error">' + escHtml(data.msg || 'Failed to load datastores') + '</div>';
         }
@@ -2265,11 +2265,13 @@ class CdDvdManagerTabRenderer {
       });
   }
   
-  function renderDatastoreList(datastores) {
+  function renderDatastoreList(datastores, restricted) {
     var dsListView = document.getElementById('dsListView');
     
     if (!datastores || datastores.length === 0) {
-      dsListView.innerHTML = '<div class="cd-empty">No datastores found</div>';
+      dsListView.innerHTML = '<div class="cd-empty">' + (restricted
+        ? 'No datastores are available to you in Morpheus'
+        : 'No datastores found') + '</div>';
       return;
     }
     

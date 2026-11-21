@@ -253,6 +253,19 @@ class VCenterApiClient {
     }
 
     /**
+     * The vCenter reference (datastore-123) of the datastore with this exact name, or null when there is
+     * none or the name is not unique.
+     */
+    String datastoreIdByName(String name) {
+        if (!name?.trim()) return null
+        String response = restGet("/vcenter/datastore?names=" + URLEncoder.encode(name, StandardCharsets.UTF_8.name()))
+        List matches = (new JsonSlurper().parseText(response) as List).findAll { ds -> (ds.name as String) == name }
+        if (matches.size() != 1) return null
+        String id = matches.first().datastore as String
+        return (id ==~ /^datastore-[0-9]{1,18}$/) ? id : null
+    }
+
+    /**
      * List datastores accessible to a specific VM's host.
      * Uses SOAP PropertyCollector to get the actual host-datastore mapping.
      * @param vmId VM identifier (e.g., "vm-123")

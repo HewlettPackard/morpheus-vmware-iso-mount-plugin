@@ -10,7 +10,7 @@ A Morpheus plugin that adds a **CD/DVD** tab to the instance page and to the ser
 
 ## Features
 - Shows the VM's CD/DVD drives, the mounted ISO (if any) and whether the drive is connected.
-- Browse the datastores the VM's host can access, open folders, and pick an ISO file.
+- Browse the datastores the VM's host can reach **and** the user may use in Morpheus, open folders, and pick an ISO file. See [Datastore access](#datastore-access).
 - Mount the selected ISO to the VM's CD/DVD drive.
 - Eject the disc, with a confirmation step.
 - **Check vCenter** looks for a pending vCenter question on the VM (for example a locked CD/DVD drive) and lets the user answer it.
@@ -58,6 +58,15 @@ If the cloud does not provide complete credentials, the plugin falls back to the
 | Allow untrusted vCenter certificate | Off by default. Accepts a self-signed certificate and shows a warning in the tab |
 
 The plugin does not store credentials itself and does not log passwords.
+
+## Datastore access
+The datastore list is the datastores the VM's host can reach in vCenter, reduced to those the signed-in user may use in Morpheus. A vCenter datastore is listed only when all of these hold:
+- The user's role does not have **Infrastructure: Storage** set to None. If Morpheus does not report that permission for the user, this check is skipped and the rules below still apply.
+- The datastore is shared with the user's tenant and with the group of the instance or server (Infrastructure > Storage > Data Stores > Actions > Edit: Groups and Tenants).
+- The datastore is active and online in Morpheus.
+- The datastore is known to Morpheus. Datastores are matched by their vCenter reference (for example `datastore-123`). A datastore Morpheus has not synced is hidden.
+
+The same rule is checked again when browsing a datastore and when mounting an ISO, so a datastore outside the list cannot be reached by sending its name directly. If Morpheus cannot be queried, the plugin returns an error instead of an unfiltered list.
 
 ## Usage
 1. Open an instance or a server on a VMware cloud and select the **CD/DVD** tab.

@@ -79,6 +79,18 @@ class CdDvdManagerController implements PluginController {
         User user
         String logObject
         boolean allSelected   // an instance with several VMs, with 'all' picked
+        Long siteId           // the group of the instance or server, for datastore group access
+        Long cloudId
+        MorpheusContext morpheus
+        private DatastoreAccess datastoreAccess
+
+        /** Morpheus-side datastore permissions of the caller; looked up once per request. */
+        DatastoreAccess access() {
+            if (datastoreAccess == null) {
+                datastoreAccess = DatastoreAccess.resolve(morpheus, user, cloudId, siteId)
+            }
+            return datastoreAccess
+        }
     }
 
     // -----------------------------------------------------------------------
@@ -93,11 +105,26 @@ class CdDvdManagerController implements PluginController {
         }
     }
 
+    /** Only datastores the VM's host can reach AND the user may use in Morpheus are listed. */
     def listDatastores(ViewModel<Map> model) {
         return run(model, 'listDatastores', true) { Ctx c ->
-            def datastores = c.client.listDatastoresForVm(c.primaryVmMor).collect { Map ds -> [name: ds.name, type: ds.type] }
-            return [success: true, datastores: datastores]
+            List<Map> reachable = c.client.listDatastoresForVm(c.primaryVmMor)
+            DatastoreAccess access = c.access()
+            def datastores = reachable.findAll { Map ds -> access.allows(ds.datastore as String, ds.name as String) }
+                .collect { Map ds -> [name: ds.name, type: ds.type] }
+            log.info("AUDIT cdDvd action=listDatastores user=${c.user.id} ${c.logObject} reachable=${reachable.size()} allowed=${datastores.size()}")
+            return [success: true, datastores: datastores, restricted: datastores.size() < reachable.size()]
         }
+    }
+
+    /** Refuses a datastore the user may not use in Morpheus, even when its name is sent by hand. */
+    private static String refuseUnlessAllowed(Ctx c, String datastoreName) {
+        String mor = c.client.datastoreIdByName(datastoreName)
+        if (mor == null || !c.access().allows(mor, datastoreName)) {
+            log.warn("CdDvd outcome=denied user=${c.user.id} ${c.logObject} reason='datastore not available to the user'")
+            return 'The datastore is not available to you'
+        }
+        return null
     }
 
     def browseDatastore(ViewModel<Map> model) {
@@ -109,6 +136,8 @@ class CdDvdManagerController implements PluginController {
         boolean filterEmpty = model.request.getParameter('filterEmpty')?.trim() != 'false'
 
         return run(model, 'browseDatastore', false) { Ctx c ->
+            String refusal = refuseUnlessAllowed(c, datastoreName)
+            if (refusal) return [success: false, msg: refusal]
             def result = c.client.browseDatastoreFiltered(datastoreName, path, filterEmpty)
             return [success: true, folders: result.folders, files: result.files, path: path, datastore: datastoreName, filtered: filterEmpty]
         }
@@ -127,6 +156,8 @@ class CdDvdManagerController implements PluginController {
         String isoPath = "[${iso[0]}] ${iso[1]}".toString()
 
         return run(model, 'mountIso', false) { Ctx c ->
+            String refusal = refuseUnlessAllowed(c, iso[0])
+            if (refusal) return [success: false, mounted: 0, msg: refusal]
             List<VmTargets.Target> targets = c.resolved.targets
             boolean several = targets.size() > 1
             List<String> mounted = []
@@ -302,6 +333,7 @@ class CdDvdManagerController implements PluginController {
 
             VmTargets.Resolved resolved
             boolean allSelected = false
+            Long siteId = null
             if (hasInstance) {
                 Instance instance = loadInstance(instanceId)
                 if (instance == null || !SecurityUtil.canAccessAccount(user, instance.account)) {
@@ -311,6 +343,7 @@ class CdDvdManagerController implements PluginController {
                 String target = model.request.getParameter('target')?.trim()
                 resolved = VmTargets.select(VmTargets.forInstance(morpheus, instance), target)
                 allSelected = resolved.targets.size() > 1
+                siteId = instance.site?.id
             } else {
                 ComputeServer server = loadServer(serverId)
                 if (server == null || !SecurityUtil.canAccessAccount(user, server.account)) {
@@ -318,6 +351,7 @@ class CdDvdManagerController implements PluginController {
                     return respond([success: false, msg: 'Server not found'])
                 }
                 resolved = VmTargets.forServer(morpheus, server)
+                siteId = server.provisionSiteId
             }
 
             VCenterCredentials creds = VCenterCredentials.resolve(morpheus, plugin, resolved.cloudId)
@@ -328,7 +362,8 @@ class CdDvdManagerController implements PluginController {
             client = new VCenterApiClient(creds.host, creds.user, creds.password, creds.allowUntrusted)
             client.login()
 
-            Ctx ctx = new Ctx(client: client, resolved: resolved, user: user, logObject: logObject, allSelected: allSelected)
+            Ctx ctx = new Ctx(client: client, resolved: resolved, user: user, logObject: logObject, allSelected: allSelected,
+                              siteId: siteId, cloudId: resolved.cloudId, morpheus: morpheus)
             if (needPrimaryVm) {
                 ctx.primaryVmMor = client.verifyVmMor(resolved.primary.vmMor)
                 if (!ctx.primaryVmMor) {
