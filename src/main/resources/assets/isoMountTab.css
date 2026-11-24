@@ -1,0 +1,334 @@
+/**
+ * isoMountTab.css
+ * Styles for the CD-DVD Manager plugin tab
+ */
+
+#iso-container {
+  font-family: inherit;
+  padding: 16px;
+}
+
+/* ---- Error Banner ---- */
+.iso-error-banner {
+  background: #fee;
+  border-left: 4px solid #c00;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border-radius: 4px;
+  color: #900;
+}
+
+/* ---- Toolbar ---- */
+.iso-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.iso-toolbar-title {
+  font-size: 15px;
+  color: #333;
+}
+
+/* ---- Main Content Layout ---- */
+.iso-main-content {
+  display: flex;
+  gap: 24px;
+}
+
+.iso-browser-panel {
+  flex: 2;
+  min-width: 0;
+}
+
+.iso-mount-panel {
+  flex: 1;
+  min-width: 280px;
+  background: #f9f9f9;
+  border-radius: 6px;
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+}
+
+/* ---- Form Groups ---- */
+.iso-form-group {
+  margin-bottom: 16px;
+}
+
+.iso-label {
+  display: block;
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 6px;
+  color: #555;
+}
+
+#iso-container select.form-control {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  background: #fff;
+}
+
+#iso-container select.form-control:focus {
+  outline: none;
+  border-color: #5c7cfa;
+  box-shadow: 0 0 0 2px rgba(92, 124, 250, 0.2);
+}
+
+/* ---- Breadcrumb ---- */
+.iso-breadcrumb {
+  background: #f5f5f5;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.iso-breadcrumb-item {
+  color: #5c7cfa;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 2px;
+}
+
+.iso-breadcrumb-item:hover {
+  background: #e8ecfc;
+  text-decoration: underline;
+}
+
+.iso-breadcrumb-sep {
+  color: #999;
+  margin: 0 2px;
+}
+
+/* ---- File Browser ---- */
+.iso-file-browser {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fff;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.iso-file-list {
+  padding: 4px 0;
+}
+
+.iso-file-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.15s;
+}
+
+.iso-file-item:last-child {
+  border-bottom: none;
+}
+
+.iso-file-item:hover {
+  background: #f5f8ff;
+}
+
+.iso-file-item.selected {
+  background: #e3ecff;
+  border-left: 3px solid #5c7cfa;
+}
+
+.iso-file-item i {
+  margin-right: 10px;
+  width: 16px;
+  text-align: center;
+  color: #666;
+}
+
+.iso-folder i {
+  color: #f5b800;
+}
+
+.iso-file i {
+  color: #888;
+}
+
+.iso-filename {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.iso-filesize {
+  font-size: 12px;
+  color: #888;
+  margin-left: 12px;
+  white-space: nowrap;
+}
+
+.iso-loading, .iso-empty, .iso-error {
+  padding: 24px;
+  text-align: center;
+  color: #888;
+}
+
+.iso-error {
+  color: #c00;
+}
+
+/* ---- Selected File Display ---- */
+.iso-selected-file {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px 12px;
+  min-height: 40px;
+  font-size: 13px;
+  word-break: break-all;
+}
+
+.iso-no-selection {
+  color: #999;
+  font-style: italic;
+}
+
+.iso-selected-path {
+  font-family: monospace;
+  font-size: 12px;
+  color: #333;
+}
+
+/* ---- CD/DVD Status ---- */
+.iso-cdrom-status {
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+.iso-cdrom-status .iso-mounted {
+  color: #2e7d32;
+}
+
+.iso-cdrom-status .iso-unmounted {
+  color: #888;
+}
+
+.iso-cdrom-status .iso-warning {
+  color: #e65100;
+}
+
+.iso-cdrom-status .iso-error {
+  color: #c00;
+}
+
+/* ---- Action Buttons ---- */
+.iso-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.iso-actions .button {
+  flex: 1;
+}
+
+.iso-actions .btn-default {
+  flex: 0 0 auto;
+}
+
+/* ---- Status Message ---- */
+.iso-status-msg {
+  margin-top: 16px;
+  padding: 10px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  min-height: 20px;
+}
+
+.iso-status-msg:empty {
+  display: none;
+}
+
+.iso-status-msg.success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+}
+
+.iso-status-msg.error {
+  background: #ffebee;
+  color: #c62828;
+  border: 1px solid #ef9a9a;
+}
+
+.iso-status-msg.info {
+  background: #e3f2fd;
+  color: #1565c0;
+  border: 1px solid #90caf9;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 800px) {
+  .iso-main-content {
+    flex-direction: column;
+  }
+  
+  .iso-mount-panel {
+    min-width: auto;
+  }
+}
+
+/* ---- Morpheus-compatible button styles ---- */
+#iso-container .button {
+  display: inline-block;
+  padding: 8px 16px;
+  background: #5c7cfa;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s;
+}
+
+#iso-container .button:hover:not(:disabled) {
+  background: #4263eb;
+}
+
+#iso-container .button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+#iso-container .btn-default {
+  background: #f5f5f5;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+#iso-container .btn-default:hover:not(:disabled) {
+  background: #e8e8e8;
+}
+
+#iso-container .btn-default:disabled {
+  background: #f5f5f5;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+/* ---- Loading spinner ---- */
+.fa-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
